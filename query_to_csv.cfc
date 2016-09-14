@@ -1,4 +1,5 @@
 <cfcomponent>
+  <!--- Credits to Ben Nadel: http://www.bennadel.com/blog/1231-converting-a-coldfusion-query-to-csv-using-querytocsv.htm --->
   <cffunction name="query_to_csv" output="yes" returntype="Any">
     <!---Function Arguments--->
     <cfargument name="Query" required="yes" type="query" default="" hint="The query you want output as a spreadsheet"/>
