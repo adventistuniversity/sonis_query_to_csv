@@ -107,14 +107,12 @@
 
     <cfset batch_dir = trim(#batch_dir_query.batch_dir#) & "\">
     <cfset login_id = trim(#session.login_id#)>
-    <cfset file_name = #login_id# & "_" & #report_name# & ".csv">
-    <cfset save_path = #batch_dir# & #login_id# & "_" & #report_name# & ".csv">
-
+    <cfset file_name = #login_id# & "_" & #ReReplace(report_name, "[[:space:]]","","ALL")# & ".csv">
+    <cfset save_path = #batch_dir# & #login_id# & "_" & #ReReplace(report_name, "[[:space:]]","","ALL")# & ".csv">
     <cffile action = "write" file = #save_path# output = #LOCAL.Buffer.ToString()#>
-
     <!--- Stream the file to browser/delete it                                                        --->
         <cfheader name="Content-Disposition" value="attachment;filename=#file_name#">
-        <cfcontent type="text/csv" file="#save_path#" deletefile="Yes">
+        <cfcontent type="application/octet-stream" file="#save_path#" deletefile="Yes">
     </cfif>
 
   </cffunction>
