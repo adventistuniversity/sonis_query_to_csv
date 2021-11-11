@@ -6,8 +6,16 @@
     <cfargument name="Fields" type="string" required="true" hint="The list of query fields to be used when creating the CSV"/>
     <cfargument name="CreateHeaderRow" type="boolean" required="false" default="true" hint="I flag whether or not to create a row of header values."/>
     <cfargument name="Delimiter" type="string" required="false" default="," hint="I am the field delimiter in the CSV value."/>
+    <cfargument name="QuoteFields" type="boolean" required="false" default="true" hint="Choose to surround each field with quotes or not."/>
+    <cfargument name="Extension" type="string" required="false" default="csv" hint="Extension of the file generated. The default is csv."/>
     <cfargument name="report_name" required="yes" type="string" default="" hint="The name of this report">
     <cfset variables.report_name = arguments.report_name>
+
+    <cfif ARGUMENTS.QuoteFields>
+        <cfset quotes = """">
+    <cfelse>
+        <cfset quotes = ''>    
+    </cfif> 
 
     <cfset var LOCAL = {} />
     <cfset LOCAL.ColumnNames = {} />
@@ -45,7 +53,7 @@
             <cfset LOCAL.Buffer.Append(
                 JavaCast(
                     "string",
-                    """#LOCAL.ColumnNames[ LOCAL.ColumnIndex ]#"""
+                    "#quotes##LOCAL.ColumnNames[ LOCAL.ColumnIndex ]##quotes#"
                     )
                 ) />
             <cfif (LOCAL.ColumnIndex LT LOCAL.ColumnCount)>
@@ -74,7 +82,7 @@
             <cfset LOCAL.Buffer.Append(
                 JavaCast(
                     "string",
-                    """#ARGUMENTS.Query[ LOCAL.ColumnNames[ LOCAL.ColumnIndex ] ][ ARGUMENTS.Query.CurrentRow ]#"""
+                    "#quotes##ARGUMENTS.Query[ LOCAL.ColumnNames[ LOCAL.ColumnIndex ] ][ ARGUMENTS.Query.CurrentRow ]##quotes#"
                     )
                 ) />
 
@@ -105,8 +113,8 @@
 
     <cfset batch_dir = trim(#batch_dir_query.batch_dir#) & "\">
     <cfset login_id = trim(#session.login_id#)>
-    <cfset file_name = #login_id# & "_" & #ReReplace(report_name, "[[:space:]]","","ALL")# & ".csv">
-    <cfset save_path = #batch_dir# & #login_id# & "_" & #ReReplace(report_name, "[[:space:]]","","ALL")# & ".csv">
+    <cfset file_name = #login_id# & "_" & #ReReplace(report_name, "[[:space:]]","","ALL")# & ".#ARGUMENTS.Extension#">
+    <cfset save_path = #batch_dir# & #login_id# & "_" & #ReReplace(report_name, "[[:space:]]","","ALL")# & ".#ARGUMENTS.Extension#">
     <cffile action = "write" file = #save_path# output = #LOCAL.Buffer.ToString()#>
     <!--- Stream the file to browser/delete it                                                        --->
         <cfheader name="Content-Disposition" value="attachment;filename=#file_name#">
